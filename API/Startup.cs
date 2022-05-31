@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Data;
+
+using API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 
 namespace API
 {
@@ -34,13 +28,34 @@ namespace API
             //    c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             //});
 
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseNpgsql(_config.GetConnectionString("DefaultConnection"));
-            });
+            //services.AddScoped<ITokenService, TokenService>();
+
+            //services.AddDbContext<DataContext>(options =>
+            //{
+            //    options.UseNpgsql(_config.GetConnectionString("DefaultConnection"));
+            //});
+
+            services.AddApplicationServices(_config);
+
             services.AddControllers();
 
             services.AddCors();
+
+            services.AddIdentityServices(_config);
+
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            //{
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuerSigningKey = true,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
+            //        ValidateIssuer = false,
+            //        ValidateAudience = false
+
+            //    };
+            //});
+
+
 
         }
 
@@ -59,6 +74,8 @@ namespace API
             //app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200/"));
 
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
